@@ -16,7 +16,7 @@ import Scalaz._
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 class MapsSpec
-  extends FlatSpec
+    extends FlatSpec
     with Suite
     with PostgresAroundAll
     with SuiteResourceManagementAroundAll

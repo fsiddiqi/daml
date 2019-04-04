@@ -65,10 +65,12 @@ object JsonConverters {
   }
 
   implicit val mapEncoder: Encoder[Map[String, LedgerValue]] = m => {
-    JsonObject("Map" ->
-      m.toList.sortBy(_._1)(UTF8.ordering)
-        .map{case (k, v) => JsonObject("key" -> k.asJson, "value" -> v.asJson)}.asJson
-    ).asJson
+    JsonObject(
+      "Map" ->
+        m.toList
+          .sortBy(_._1)(UTF8.ordering)
+          .map { case (k, v) => JsonObject("key" -> k.asJson, "value" -> v.asJson) }
+          .asJson).asJson
   }
 
   implicit val idKeyEncoder: KeyEncoder[Identifier] = id => s"${id.packageId}@${id.name}"
