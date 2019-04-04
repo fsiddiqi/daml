@@ -3,7 +3,7 @@
 
 package com.digitalasset.extractor.writers
 
-import com.digitalasset.daml.lf.iface.reader.{InterfaceType, Interface}
+import com.digitalasset.daml.lf.iface.reader.{Interface, InterfaceType}
 import com.digitalasset.extractor.config.ExtractorConfig
 import com.digitalasset.extractor.ledger.LedgerReader
 import com.digitalasset.extractor.ledger.LedgerReader.PackageStore
@@ -21,9 +21,10 @@ import cats.effect.{ContextShift, IO}
 import cats.implicits._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 import scalaz._
 import Scalaz._
+import com.digitalasset.daml.lf.iface.Record
 
 class PostgreSQLWriter(config: ExtractorConfig, target: PostgreSQLTarget, ledgerId: String)
     extends Writer
@@ -109,7 +110,11 @@ class PostgreSQLWriter(config: ExtractorConfig, target: PostgreSQLTarget, ledger
       else
         (multiTableState, connection.pure(()))
 
+    println("%%1%%%")
+
     val updatedWitnessedPackages = packageStore.packages.keySet
+
+    println("%%3%%%")
 
     val saveStatus = StateHandler.saveStatus(
       ledgerId,
@@ -145,7 +150,7 @@ class PostgreSQLWriter(config: ExtractorConfig, target: PostgreSQLTarget, ledger
           (updatedState, queries *> thisQueries)
       }
 
-    val templateDecls = newPackages.flatMap {
+    val templateDecls: Map[Identifier, Record.FWT] = newPackages.flatMap {
       case (packageId, interface) =>
         interface.typeDecls.collect {
           case (id, InterfaceType.Template(r, _)) =>
